@@ -140,17 +140,40 @@
                 <input type="date" name="dob" value="<%= person.getDob()%>">
                 <br>
                 <label for="idPlace">Lugar de nacimiento:</label>
-                <select name="idP" id="place" >
+                <select name="idP"  >
                
+                 <%
+                    for(int i = 0; i < places.size(); i++){
+                    String selected = "";
+                    if(places.get(i).getId() == person.getPlaceOfBirth().getId()){
+                        selected="selected";
+                    }
+                    
+                %>
+                <option value="<%= places.get(i).getId() %>" label="<%= places.get(i).getDescription() %>" <%= selected %>>
+                <%}%>    
+                    
                 </select>
 
                 <br>
 
+                
+                
                 <label for="idAddress">Lugar de residencia:</label>
                 <select name="idA" id="address" >
+
+                <%
+                    for(int i = 0; i < places.size(); i++){
+                    String selected = "";
+                    if(places.get(i).getId() == person.getAddress().getId()){
+                        selected="selected";
+                    }
                     
-                    
+                %>
+                <option value="<%= places.get(i).getId() %>" label="<%= places.get(i).getDescription() %>" <%= selected %>>
+                <%}%>    
                 </select>
+                
                 <br>
 
                
@@ -269,86 +292,5 @@
     </body>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 
-    
-           <script>
-       let data = document.getElementById("h4").value;
-       data = data.substring(0,data.length - 1).split(";");
-       let places = [];
-       
-       for (var i = 0; i < data.length; i++) {   
-           places.push(JSON.parse(data[i]));
-       }
-       
-    
-        function toTree(data) {
-        var childrenById = {}; // of the form id: [child-ids]
-        var nodes = {};        // of the form id: {name: children: }
-        var i, row;
-        var root;
-        // first pass: build child arrays and initial node array
-        for (i=0; i<data.length; i++) {
-            row = data[i];
-            nodes[row.id] = {id: row.id, name: row.name, children: [], type: row.type};
-            if (row.parent == 0) { // assume 0 is used to mark the root's "parent"
-                root = row.id; 
-            } else if (childrenById[row.parent] === undefined) {
-               childrenById[row.parent] = [row.id];
-            } else {
-               childrenById[row.parent].push(row.id);
-            }
-        }
-        // second pass: build tree, using the awesome power of recursion!
-        function expand(id) {
-            if (childrenById[id] !== undefined) {
-                for (var i=0; i < childrenById[id].length; i ++) {
-                    var childId = childrenById[id][i];
-                    nodes[id].children.push(expand(childId));
-                }
-            }
-            return nodes[id];
-        }
-        return expand(root);
-     }
-     
-     tree = toTree(places);
-     
-     
-     function displayTree(node, selected){
-         let spaces = {
-             "G": "",
-             "A": "&#160;&#160;&#160;",
-             "B": "&#160;&#160;&#160;&#160;&#160;&#160;",
-             "V": "&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;",
-             "D": "&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;",
-         }
-   
-         result = "<option value='"+node.id + "'>"+ spaces[node.type] + node.name + "</option>";
-         for (var i = 0; i < node.children.length; i++) {
-             if(node.children[i].children.length === 0){
-                 console.log(node.children[i].id, selected )
-                if(node.children[i].id == selected){
-                    result += "<option value='"+node.children[i].id + "' selected>"+ spaces[node.children[i].type] + node.children[i].name + "</option>";
-
-                }else{
-                    result += "<option value='"+node.children[i].id + "'>"+ spaces[node.children[i].type] + node.children[i].name + "</option>";
-                }
-
-            }else{
-                 result += displayTree(node.children[i]);
-             }
-         }
  
-         return result;
-     }
-     
-     let treeView = document.getElementById("place");
-     let treeView2 = document.getElementById("address")
-     
-     treeView.innerHTML = displayTree(tree, <%= person.getPlaceOfBirth().getId() %>)
-     treeView2.innerHTML = displayTree(tree, <%= person.getAddress().getId()%>)
-     
- 
-     
-     
-    </script>
 </html>
